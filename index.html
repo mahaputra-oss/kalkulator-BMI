@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7f2">
+  <meta name="description" content="Kalkulator BMI sederhana untuk menghitung dan memahami indeks massa tubuh.">
+  <title>Kalkulator BMI — Ruang Sehat</title>
+  <style>
+    :root { --ink:#1e332b; --muted:#6c7c73; --green:#276749; --lime:#d8f17d; --paper:#f5f7f2; --line:#e4e9e1; --white:#fff; }
+    * { box-sizing:border-box }
+    body { margin:0; background:var(--paper); color:var(--ink); font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+    .shell { width:min(1080px, calc(100% - 40px)); margin:auto }
+    header { display:flex; justify-content:space-between; align-items:center; padding:26px 0; }
+    .brand { display:flex; align-items:center; gap:10px; font-weight:800; letter-spacing:-.04em; font-size:19px }
+    .brand-mark { width:34px;height:34px;border-radius:12px;background:var(--lime);display:grid;place-items:center;color:var(--green);font-size:20px }
+    .top-note { color:var(--muted);font-size:13px }
+    main { padding:44px 0 72px }
+    .intro { max-width:640px; margin:0 auto 32px; text-align:center }
+    .eyebrow { color:var(--green); font-weight:750; text-transform:uppercase; letter-spacing:.13em; font-size:11px }
+    h1 { font-size:clamp(36px,6vw,58px); line-height:1.04; letter-spacing:-.06em; margin:12px 0 14px }
+    .intro p { color:var(--muted);font-size:16px;line-height:1.7;margin:0 }
+    .layout { display:grid; grid-template-columns:1fr .9fr; gap:20px; align-items:stretch }
+    .card { background:var(--white); border:1px solid var(--line); border-radius:22px; padding:30px; box-shadow:0 12px 40px rgba(31,56,43,.045) }
+    .card h2 { font-size:18px; letter-spacing:-.03em; margin:0 0 6px }
+    .sub { color:var(--muted);font-size:13px;line-height:1.55;margin:0 0 24px }
+    .fields { display:grid;grid-template-columns:1fr 1fr;gap:16px }
+    label { display:block;font-size:13px;font-weight:700;margin-bottom:8px }
+    .input-wrap { position:relative }
+    input { width:100%;height:54px;border:1px solid #dce4dc;border-radius:12px;background:#fbfcfa;padding:0 52px 0 15px;font:inherit;font-size:16px;color:var(--ink);outline:none;transition:.18s }
+    input:focus { border-color:var(--green);box-shadow:0 0 0 3px rgba(39,103,73,.12) }
+    .unit { position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--muted) }
+    .full { grid-column:1/-1 }
+    button { width:100%;height:54px;border:0;border-radius:12px;background:var(--green);color:white;font:inherit;font-weight:750;font-size:15px;cursor:pointer;transition:transform .15s,background .15s }
+    button:hover { background:#1d563b;transform:translateY(-1px) }
+    button:focus-visible { outline:3px solid var(--lime);outline-offset:3px }
+    .error { color:#b42318;font-size:13px;margin:12px 0 0;min-height:18px }
+    .result { background:#f2f7eb;display:flex;flex-direction:column;justify-content:space-between;min-height:100% }
+    .result-top { display:flex;justify-content:space-between;align-items:center }
+    .pill { background:#e5efd9;border-radius:100px;padding:7px 11px;font-size:11px;font-weight:750;color:var(--green) }
+    .result-number { margin:30px 0 3px;font-size:clamp(64px,9vw,84px);line-height:1;font-weight:800;letter-spacing:-.075em;color:var(--green) }
+    .result-caption { color:var(--muted);font-size:13px }
+    .status { margin:24px 0 8px;font-size:21px;font-weight:800;letter-spacing:-.04em }
+    .explain { color:var(--muted);font-size:14px;line-height:1.65;margin:0 }
+    .scale { margin-top:28px }
+    .scale-track { height:8px;border-radius:20px;background:linear-gradient(90deg,#f6c96b 0 25%,#79b984 25% 50%,#f6c96b 50% 75%,#df8a73 75% 100%);position:relative }
+    .marker { width:16px;height:16px;border-radius:50%;border:3px solid #fff;background:var(--ink);position:absolute;top:50%;left:0;transform:translate(-50%,-50%);box-shadow:0 1px 5px #0003;transition:left .4s }
+    .scale-labels { display:flex;justify-content:space-between;color:var(--muted);font-size:10px;margin-top:9px }
+    .disclaimer { border-top:1px solid #dfe8d7;margin-top:24px;padding-top:17px;color:#718075;font-size:11px;line-height:1.55 }
+    .how { margin:24px 0 0;color:var(--muted);font-size:12px;line-height:1.6;text-align:center }
+    footer { border-top:1px solid var(--line);padding:20px 0 28px;color:var(--muted);font-size:12px;text-align:center }
+    @media(max-width:700px) { header{padding:18px 0}.top-note{font-size:11px}main{padding:26px 0 48px}.layout{grid-template-columns:1fr}.card{padding:23px}.result{min-height:360px}.intro{margin-bottom:25px} }
+    @media(max-width:390px) { .shell{width:calc(100% - 28px)}.fields{gap:12px}.card{padding:19px} }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div class="brand"><span class="brand-mark" aria-hidden="true">✳</span> ruang sehat</div>
+      <div class="top-note">Kenali tubuhmu, mulai dari sini</div>
+    </header>
+    <main>
+      <section class="intro">
+        <div class="eyebrow">Alat hitung kesehatan</div>
+        <h1>Berapa indeks massa tubuhmu?</h1>
+        <p>Masukkan tinggi dan berat badan untuk melihat perkiraan BMI serta kategori indeks massa tubuhmu.</p>
+      </section>
+      <section class="layout" aria-label="Kalkulator BMI">
+        <form class="card" id="bmi-form" novalidate>
+          <h2>Data tubuh</h2>
+          <p class="sub">Gunakan satuan kilogram dan sentimeter.</p>
+          <div class="fields">
+            <div>
+              <label for="weight">Berat badan</label>
+              <div class="input-wrap"><input id="weight" name="weight" type="number" min="1" max="500" step="0.1" placeholder="Contoh: 60" inputmode="decimal" required><span class="unit">kg</span></div>
+            </div>
+            <div>
+              <label for="height">Tinggi badan</label>
+              <div class="input-wrap"><input id="height" name="height" type="number" min="50" max="250" step="0.1" placeholder="Contoh: 165" inputmode="decimal" required><span class="unit">cm</span></div>
+            </div>
+            <div class="full"><button type="submit">Hitung BMI <span aria-hidden="true">→</span></button><p class="error" id="error" role="alert" aria-live="polite"></p></div>
+          </div>
+        </form>
+        <section class="card result" aria-live="polite" aria-label="Hasil BMI">
+          <div>
+            <div class="result-top"><h2>Hasil perhitungan</h2><span class="pill">BMI</span></div>
+            <div class="result-number" id="bmi-value">—</div>
+            <div class="result-caption">indeks massa tubuh</div>
+            <div class="status" id="category">Menunggu datamu</div>
+            <p class="explain" id="explanation">Hasil perhitungan akan muncul di sini setelah kamu memasukkan berat dan tinggi badan.</p>
+            <div class="scale" aria-label="Skala kategori BMI">
+              <div class="scale-track"><span class="marker" id="marker"></span></div>
+              <div class="scale-labels"><span>Kurang</span><span>Normal</span><span>Berlebih</span><span>Obesitas</span></div>
+            </div>
+          </div>
+          <p class="disclaimer">BMI adalah alat skrining sederhana, bukan diagnosis medis. Interpretasinya dapat berbeda untuk anak-anak, remaja, ibu hamil, atlet, dan kondisi tertentu. Konsultasikan dengan tenaga kesehatan untuk penilaian yang sesuai.</p>
+        </section>
+      </section>
+      <p class="how">Rumus BMI = berat badan (kg) ÷ tinggi badan (m)²</p>
+    </main>
+    <footer>Dibuat untuk membantu memahami BMI dengan cara yang sederhana.</footer>
+  </div>
+  <script>
+    const form = document.querySelector('#bmi-form');
+    const weightInput = document.querySelector('#weight');
+    const heightInput = document.querySelector('#height');
+    const error = document.querySelector('#error');
+    const valueEl = document.querySelector('#bmi-value');
+    const categoryEl = document.querySelector('#category');
+    const explanationEl = document.querySelector('#explanation');
+    const marker = document.querySelector('#marker');
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const weight = Number(weightInput.value);
+      const heightCm = Number(heightInput.value);
+      if (!weightInput.value || !heightInput.value || !Number.isFinite(weight) || !Number.isFinite(heightCm)) {
+        error.textContent = 'Isi berat dan tinggi badan terlebih dahulu.';
+        return;
+      }
+      if (weight < 1 || weight > 500 || heightCm < 50 || heightCm > 250) {
+        error.textContent = 'Periksa kembali datamu. Berat harus 1–500 kg dan tinggi 50–250 cm.';
+        return;
+      }
+      error.textContent = '';
+      const bmi = weight / ((heightCm / 100) ** 2);
+      let category, explanation, markerPosition;
+      if (bmi < 18.5) {
+        category = 'Berat badan kurang';
+        explanation = 'BMI-mu berada di bawah rentang acuan dewasa. Pertimbangkan untuk berdiskusi dengan tenaga kesehatan tentang kebutuhan gizimu.';
+        markerPosition = Math.max(2, (bmi / 40) * 100);
+      } else if (bmi < 25) {
+        category = 'Berat badan normal';
+        explanation = 'BMI-mu berada dalam rentang acuan normal untuk orang dewasa. Jaga kebiasaan makan seimbang dan aktivitas fisik.';
+        markerPosition = (bmi / 40) * 100;
+      } else if (bmi < 30) {
+        category = 'Berat badan berlebih';
+        explanation = 'BMI-mu berada di atas rentang acuan normal. BMI hanya gambaran awal; faktor kesehatan lain juga perlu dipertimbangkan.';
+        markerPosition = (bmi / 40) * 100;
+      } else {
+        category = 'Obesitas';
+        explanation = 'BMI-mu berada pada kategori obesitas menurut acuan dewasa. Tenaga kesehatan dapat membantu menilai kondisi dan langkah yang tepat.';
+        markerPosition = Math.min(98, (bmi / 40) * 100);
+      }
+      valueEl.textContent = bmi.toFixed(1);
+      categoryEl.textContent = category;
+      explanationEl.textContent = explanation;
+      marker.style.left = `${markerPosition}%`;
+    });
+  </script>
+</body>
+</html>
